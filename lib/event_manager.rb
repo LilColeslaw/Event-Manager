@@ -6,6 +6,24 @@ def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5, '0')[0..4]
 end
 
+def clean_phone_number(phone_number)
+  # first get rid of non-digits (dashes and paretheses etc)
+  numbers = (0..9).map(&:to_s)
+  phone_number = phone_number.split('').filter { |digit| numbers.include? digit }.join('')
+  # check for size
+  case phone_number.length
+  when 10 then phone_number
+  when 11
+    if phone_number[0] == '1' # trim the 1 at the beginning if there are 11 digits
+      phone_number[1..10]
+    else
+      'Invalid Number'
+    end
+  else
+    'Invalid Number'
+  end
+end
+
 def legislators_by_zipcode(zipcode)
   civic_info = Google::Apis::CivicinfoV2::CivicInfoService.new
   civic_info.key = 'AIzaSyClRzDqDh5MsXwnCWi0kOiiBivP6JsSyBw'
