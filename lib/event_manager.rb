@@ -96,7 +96,7 @@ end
 contents = CSV.open('event_attendees.csv', headers: true, header_converters: :symbol)
 
 peak_registration_times = get_peak_registration_hours(contents.map { |row| row[:regdate] })
-puts peak_registration_times
+puts "Registrations by hour: #{peak_registration_times}"
 contents = CSV.open('event_attendees.csv', headers: true, header_converters: :symbol)
 peak_registration_days = get_peak_registration_days(contents.map { |row| row[:regdate] })
-puts peak_registration_days
+puts "Registrations by day: #{peak_registration_days}"
