@@ -76,6 +76,10 @@ def get_peak_registration_hours(times)
   end
 end
 
+def get_peak_registration_days(times)
+  times = times.map { |time| Date.strptime(time, '%m/%d/%y') } # puts the times in date format (no hours/minutes)
+  times = times.map { |time| time.strftime('%A') }.tally # makes times into strings of weekdays and counts occurences
+end
 
 puts 'EventManager initialized.'
 
@@ -105,3 +109,6 @@ contents = CSV.open('event_attendees.csv', headers: true, header_converters: :sy
 
 peak_registration_times = get_peak_registration_hours(contents.map { |row| row[:regdate] })
 puts peak_registration_times
+contents = CSV.open('event_attendees.csv', headers: true, header_converters: :symbol)
+peak_registration_days = get_peak_registration_days(contents.map { |row| row[:regdate] })
+puts peak_registration_days
