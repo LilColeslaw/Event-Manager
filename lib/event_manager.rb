@@ -1,6 +1,8 @@
 require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
+require 'pry-byebug'
+require 'date'
 
 def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5, '0')[0..4]
@@ -58,15 +60,22 @@ def save_thank_you_letter(id, form_letter)
 end
 
 def get_peak_registration_hours(times)
-  times = times.map { |time| Time.parse(time).hour } # get the hours (0 - 23)
+  times = times.map { |time| DateTime.strptime(time, '%m/%d/%y %H:%M').hour } # get the hours (0 - 23)
   times = times.each_with_object({}) do |hour, frequencies| # count how many for each hour
     frequencies[hour] ||= 0
     frequencies [hour] += 1
   end
-  times.each_with_object({first: {hour: 0}, second: {hour: 0}, third: {hour: 0}}) do |hour, frequency, top|
-    top.map! { |_, top_value| {hour.to_sym => frequency} if top_value.values[0] < frequency}
+  times.each_with_object({first: {hour: 0}, second: {hour: 0}, third: {hour: 0}}) do |(hour, frequency), top|
+    if frequency > top[:first].values[0]
+      top[:first] = {hour => frequency}
+    elsif frequency > top[:second].values[0]
+      top[:second] = {hour => frequency}
+    elsif frequency > top[:third].values[0]
+      top[:third] = {hour => frequency}
+    end
   end
 end
+
 
 puts 'EventManager initialized.'
 
@@ -91,6 +100,8 @@ contents.each do |row|
 
   save_thank_you_letter(id, form_letter)
 end
+
+contents = CSV.open('event_attendees.csv', headers: true, header_converters: :symbol)
 
 peak_registration_times = get_peak_registration_hours(contents.map { |row| row[:regdate] })
 puts peak_registration_times
