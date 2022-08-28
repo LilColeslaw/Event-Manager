@@ -66,7 +66,7 @@ end
 
 def get_peak_registration_days(times)
   times = times.map { |time| Date.strptime(time, '%m/%d/%y') } # puts the times in date format (no hours/minutes)
-  times = times.map { |time| time.strftime('%A') }.tally # makes times into strings of weekdays and counts occurences
+  times.map { |time| time.strftime('%A') }.tally # makes times into strings of weekdays and counts occurences
 end
 
 puts 'EventManager initialized.'
